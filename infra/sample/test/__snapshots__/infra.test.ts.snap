@@ -1,4 +1,4 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`CDK Sample App Stack 1`] = `
 {
@@ -55,9 +55,9 @@ exports[`CDK Sample App Stack 1`] = `
               },
               "/",
               {
-                "Fn::Sub": "[ASSET BUCKET]",
+                "Fn::Sub": "[ASSET BUCKET]-\${AWS::AccountId}-\${AWS::Region}",
               },
-              "/[ASSET TEMPLATEURL]",
+              "/[ASSET ZIP]",
             ],
           ],
         },
@@ -82,9 +82,9 @@ exports[`CDK Sample App Stack 1`] = `
               },
               "/",
               {
-                "Fn::Sub": "[ASSET BUCKET]",
+                "Fn::Sub": "[ASSET BUCKET]-\${AWS::AccountId}-\${AWS::Region}",
               },
-              "/[ASSET TEMPLATEURL]",
+              "/[ASSET ZIP]",
             ],
           ],
         },
@@ -435,7 +435,12 @@ exports[`CDK Sample App Stack 1`] = `
         "MyFunctionServiceRole3C357FF2",
       ],
       "Properties": {
-        "Code": "[CODE REMOVED]",
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "[ASSET BUCKET]-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[ASSET ZIP]",
+        },
         "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
@@ -488,6 +493,57 @@ exports[`CDK Sample App Stack 1`] = `
       },
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
+    },
+    "frombucket42B2B247": {
+      "DependsOn": [
+        "frombucketServiceRole4D28DBC6",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "saved-assets",
+          "S3Key": "assets/lambda-handler.zip",
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "frombucketServiceRole4D28DBC6",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "frombucketServiceRole4D28DBC6": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
     },
   },
   "Rules": {

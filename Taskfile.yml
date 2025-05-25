@@ -1,0 +1,9 @@
+version: "3"
+
+includes:
+  lambda-handler:
+    taskfile: apps/lambda-handler/Taskfile.yml
+    dir: apps/lambda-handler
+  sample:
+    taskfile: infra/sample/Taskfile.yml
+    dir: infra/sample
